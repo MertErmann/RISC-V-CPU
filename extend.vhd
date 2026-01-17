@@ -24,7 +24,7 @@ begin
         imm := resize(signed(instr(31 downto 25) & instr(11 downto 7)), 32);
 
       when "10" =>
-        imm := resize(signed(instr(31) & instr(30 downto 25) & instr(11 downto 8) & instr(7) & '0'), 32);
+        imm := resize(signed(instr(31) & instr(7) & instr(30 downto 25) & instr(11 downto 8) & '0'), 32);
 
       when "11" =>
         imm := resize(signed(instr(31) & instr(19 downto 12) & instr(20) & instr(30 downto 21) & '0'), 32);

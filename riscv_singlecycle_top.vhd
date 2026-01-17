@@ -2,14 +2,21 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity riscv_singlecycle_top is
+entity riscv_singlecycle_top_dbg is
     port(
-        clk : in std_logic;
-        rst : in std_logic
+        clk         : in  std_logic;
+        rst         : in  std_logic;
+
+        pc_o        : out std_logic_vector(31 downto 0);
+        instr_o     : out std_logic_vector(31 downto 0);
+
+        memwrite_o  : out std_logic;
+        memaddr_o   : out std_logic_vector(31 downto 0);
+        memwd_o     : out std_logic_vector(31 downto 0)
     );
 end entity;
 
-architecture RTL of riscv_singlecycle_top is
+architecture RTL of riscv_singlecycle_top_dbg is
 
 signal pc         : std_logic_vector(31 downto 0);
 signal pcnext     : std_logic_vector(31 downto 0);
@@ -41,12 +48,18 @@ signal resultsrc  : std_logic;
 signal memwrite   : std_logic;
 signal alusrc_b   : std_logic;
 signal regwrite   : std_logic;
-signal alucontrol : std_logic_vector(2 downto 0);
+signal alucontrol : std_logic_vector(3 downto 0);
 signal immsrc     : std_logic_vector(1 downto 0);
 
 signal is_jal     : std_logic;
 
 begin
+
+pc_o       <= pc;
+instr_o    <= instr;
+memwrite_o <= memwrite;
+memaddr_o  <= alu_result;
+memwd_o    <= rd2;
 
 rs1 <= instr(19 downto 15);
 rs2 <= instr(24 downto 20);

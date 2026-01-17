@@ -11,10 +11,8 @@ port(
     we          : in std_logic;
     alu_result  : in std_logic_vector(31 downto 0);
     wd          : in std_logic_vector(31 downto 0);
-    rd          : out std_logic_vector(31 downto 0);
+    rd          : out std_logic_vector(31 downto 0)
 
-    dbg_addr    : in  std_logic_vector(31 downto 0);
-    dbg_rd      : out std_logic_vector(31 downto 0)
 );
 end entity;
 
@@ -29,8 +27,6 @@ begin
 word_index <= to_integer(unsigned(alu_result(31 downto 2)));
 rd <= ram(word_index);
 
-dbg_index <= to_integer(unsigned(dbg_addr(31 downto 2)));
-dbg_rd <= ram(dbg_index);
 
 process(clk)
 begin
