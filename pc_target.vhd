@@ -14,5 +14,5 @@ end entity;
 
 architecture RTL of pc_target is
 begin
-    pc_target_out <= std_logic_vector(signed(imm_ext) + signed(pc));
+    pc_target_out <= std_logic_vector(unsigned(pc) + unsigned(imm_ext));
 end architecture;

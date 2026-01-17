@@ -40,21 +40,15 @@ architecture rtl of control_unit is
     constant ALU_SLL : std_logic_vector(3 downto 0) := "0110";
     constant ALU_SRL : std_logic_vector(3 downto 0) := "0111";
     constant ALU_SRA : std_logic_vector(3 downto 0) := "1000";
-
-    signal bne : std_logic;
-
 begin
     opcode <= instr(6 downto 0);
     funct3 <= instr(14 downto 12);
     funct7 <= instr(31 downto 25);
 
-    bne <= '1' when (opcode = OP_BRANCH and funct3 = "001") else '0';
-
-    pcsrc <= jump or (branch and ((alu_zero and not bne) or ((not alu_zero) and bne)));
-
-process(opcode, funct3, funct7, alu_zero)
-
+    process(opcode, funct3, funct7, alu_zero)
+        variable take_branch : std_logic;
     begin
+        -- defaults
         regwrite   <= '0';
         memwrite   <= '0';
         resultsrc  <= '0';
@@ -63,38 +57,28 @@ process(opcode, funct3, funct7, alu_zero)
         branch     <= '0';
         jump       <= '0';
         alucontrol <= ALU_ADD;
+        pcsrc      <= '0';
 
         case opcode is
-
             when OP_RTYPE =>
                 regwrite  <= '1';
                 alusrc    <= '0';
                 resultsrc <= '0';
-
                 case funct3 is
                     when "000" =>
-                        if funct7 = "0100000" then
-                            alucontrol <= ALU_SUB;
-                        else
-                            alucontrol <= ALU_ADD;
+                        if funct7 = "0100000" then alucontrol <= ALU_SUB;
+                        else                         alucontrol <= ALU_ADD;
                         end if;
-
                     when "111" => alucontrol <= ALU_AND;
                     when "110" => alucontrol <= ALU_OR;
                     when "100" => alucontrol <= ALU_XOR;
                     when "010" => alucontrol <= ALU_SLT;
-
                     when "001" => alucontrol <= ALU_SLL;
-
                     when "101" =>
-                        if funct7 = "0100000" then
-                            alucontrol <= ALU_SRA;
-                        else
-                            alucontrol <= ALU_SRL;
+                        if funct7 = "0100000" then alucontrol <= ALU_SRA;
+                        else                         alucontrol <= ALU_SRL;
                         end if;
-
-                    when others =>
-                        alucontrol <= ALU_ADD;
+                    when others => alucontrol <= ALU_ADD;
                 end case;
 
             when OP_ITYPE =>
@@ -102,54 +86,66 @@ process(opcode, funct3, funct7, alu_zero)
                 alusrc    <= '1';
                 resultsrc <= '0';
                 immsrc    <= "00";
-
                 case funct3 is
                     when "000" => alucontrol <= ALU_ADD;
                     when "111" => alucontrol <= ALU_AND;
                     when "110" => alucontrol <= ALU_OR;
                     when "100" => alucontrol <= ALU_XOR;
                     when "010" => alucontrol <= ALU_SLT;
-
                     when "001" => alucontrol <= ALU_SLL;
-
                     when "101" =>
-                        if funct7 = "0100000" then
-                            alucontrol <= ALU_SRA;
-                        else
-                            alucontrol <= ALU_SRL;
+                        if funct7 = "0100000" then alucontrol <= ALU_SRA;
+                        else                         alucontrol <= ALU_SRL;
                         end if;
-
                     when others => alucontrol <= ALU_ADD;
                 end case;
 
             when OP_LOAD =>
-                regwrite  <= '1';
-                alusrc    <= '1';
-                resultsrc <= '1';
-                immsrc    <= "00";
+                regwrite   <= '1';
+                alusrc     <= '1';
+                resultsrc  <= '1';
+                immsrc     <= "00";
                 alucontrol <= ALU_ADD;
 
             when OP_STORE =>
-                memwrite  <= '1';
-                alusrc    <= '1';
-                immsrc    <= "01";
+                memwrite   <= '1';
+                alusrc     <= '1';
+                immsrc     <= "01";
                 alucontrol <= ALU_ADD;
 
             when OP_BRANCH =>
-                branch    <= '1';
-                alusrc    <= '0';
-                immsrc    <= "10";
+                branch     <= '1';
+                alusrc     <= '0';
+                immsrc     <= "10";
                 alucontrol <= ALU_SUB;
 
+                -- BEQ / BNE
+                take_branch := '0';
+                if funct3 = "000" then           -- BEQ
+                    if alu_zero = '1' then take_branch := '1'; end if;
+                elsif funct3 = "001" then        -- BNE
+                    if alu_zero = '0' then take_branch := '1'; end if;
+                else
+                    take_branch := '0';          -- diğer branch’ler yok şimdilik
+                end if;
+
+                pcsrc <= take_branch;
+
             when OP_JAL =>
-                regwrite  <= '1';
-                jump      <= '1';
-                immsrc    <= "11";
+                jump   <= '1';
+                immsrc <= "11";
+                pcsrc  <= '1';  -- unconditional jump
+                -- jal x0,0 için regwrite şart değil ama sorun da olmaz:
+                regwrite <= '1';
 
             when others =>
                 null;
-
         end case;
+
+        -- jump ayrı da kalsın istiyorsan:
+        if jump = '1' then
+            pcsrc <= '1';
+        end if;
     end process;
 
 end architecture;
