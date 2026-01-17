@@ -12,7 +12,9 @@ entity riscv_singlecycle_top_dbg is
 
         memwrite_o  : out std_logic;
         memaddr_o   : out std_logic_vector(31 downto 0);
-        memwd_o     : out std_logic_vector(31 downto 0)
+        memwd_o     : out std_logic_vector(31 downto 0);
+        reg_write_data_o : out std_logic_vector(31 downto 0);
+        reg_write_en_o   : out std_logic
     );
 end entity;
 
@@ -60,6 +62,8 @@ instr_o    <= instr;
 memwrite_o <= memwrite;
 memaddr_o  <= alu_result;
 memwd_o    <= rd2;
+reg_write_data_o <= wb_data;
+reg_write_en_o   <= regwrite;
 
 rs1 <= instr(19 downto 15);
 rs2 <= instr(24 downto 20);

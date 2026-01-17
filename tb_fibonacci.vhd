@@ -16,6 +16,8 @@ signal instr_o    : std_logic_vector(31 downto 0);
 signal memwrite_o : std_logic;
 signal memaddr_o  : std_logic_vector(31 downto 0);
 signal memwd_o    : std_logic_vector(31 downto 0);
+signal reg_write_data : std_logic_vector(31 downto 0);
+signal reg_write_en   : std_logic;
 
 signal store_count     : integer := 0;
 signal expected_fib_o  : std_logic_vector(31 downto 0);
@@ -32,7 +34,9 @@ port map(
     instr_o     => instr_o,
     memwrite_o  => memwrite_o,
     memaddr_o   => memaddr_o,
-    memwd_o     => memwd_o
+    memwd_o     => memwd_o,
+    reg_write_data_o => reg_write_data,
+    reg_write_en_o   => reg_write_en
 );
 
 process(store_count)
