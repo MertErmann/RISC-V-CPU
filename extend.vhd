@@ -17,21 +17,17 @@ begin
   begin
     case immsrc is
 
-      -- I-type
       when "00" =>
         imm := resize(signed(instr(31 downto 20)), 32);
 
-      -- S-type
       when "01" =>
         imm := resize(signed(instr(31 downto 25) & instr(11 downto 7)), 32);
 
-      -- B-type
       when "10" =>
         imm := resize(signed(instr(31) & instr(30 downto 25) & instr(11 downto 8) & instr(7) & '0'), 32);
 
-      -- U-type
       when "11" =>
-        imm := signed(instr(31 downto 12) & x"000");
+        imm := resize(signed(instr(31) & instr(19 downto 12) & instr(20) & instr(30 downto 21) & '0'), 32);
 
       when others =>
         imm := (others => '0');
