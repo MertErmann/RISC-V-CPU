@@ -21,9 +21,6 @@ architecture rtl of control_unit is
     signal funct3 : std_logic_vector(2 downto 0);
     signal funct7 : std_logic_vector(6 downto 0);
 
-    signal branch : std_logic;
-    signal jump   : std_logic;
-
     constant OP_RTYPE  : std_logic_vector(6 downto 0) := "0110011";
     constant OP_ITYPE  : std_logic_vector(6 downto 0) := "0010011";
     constant OP_LOAD   : std_logic_vector(6 downto 0) := "0000011";
@@ -54,8 +51,6 @@ begin
         resultsrc  <= '0';
         alusrc     <= '0';
         immsrc     <= "00";
-        branch     <= '0';
-        jump       <= '0';
         alucontrol <= ALU_ADD;
         pcsrc      <= '0';
 
@@ -114,38 +109,30 @@ begin
                 alucontrol <= ALU_ADD;
 
             when OP_BRANCH =>
-                branch     <= '1';
                 alusrc     <= '0';
                 immsrc     <= "10";
                 alucontrol <= ALU_SUB;
 
-                -- BEQ / BNE
                 take_branch := '0';
                 if funct3 = "000" then           -- BEQ
                     if alu_zero = '1' then take_branch := '1'; end if;
                 elsif funct3 = "001" then        -- BNE
                     if alu_zero = '0' then take_branch := '1'; end if;
                 else
-                    take_branch := '0';          -- diğer branch’ler yok şimdilik
+                    take_branch := '0';
                 end if;
 
                 pcsrc <= take_branch;
 
             when OP_JAL =>
-                jump   <= '1';
-                immsrc <= "11";
-                pcsrc  <= '1';  -- unconditional jump
-                -- jal x0,0 için regwrite şart değil ama sorun da olmaz:
-                regwrite <= '1';
+                immsrc   <= "11";
+                pcsrc    <= '1';
+                regwrite <= '1';  -- jal rd, imm (ama sen resultsrc PC+4 yapmadığın için şimdilik rd anlamsız)
 
             when others =>
                 null;
         end case;
 
-        -- jump ayrı da kalsın istiyorsan:
-        if jump = '1' then
-            pcsrc <= '1';
-        end if;
     end process;
 
 end architecture;
