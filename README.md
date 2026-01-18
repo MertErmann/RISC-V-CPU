@@ -47,4 +47,4 @@ To verify operation, observe the `alu_result` or `wd3` (Write Data) signals in t
 *   Convert to Pipelined Architecture to improve clock frequency.
 
 ---
-*Created by [Mert Erman] as part of a Computer Architecture learning project.*
+*Created by [Mert Erman]*
