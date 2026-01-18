@@ -3,18 +3,19 @@ use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
 entity extend is
-  port(
-    instr   : in  std_logic_vector(31 downto 0);
-    immsrc  : in  std_logic_vector(1 downto 0);
-    immext  : out std_logic_vector(31 downto 0)
-  );
+port(
+  instr   : in  std_logic_vector(31 downto 0);
+  immsrc  : in  std_logic_vector(1 downto 0);
+  immext  : out std_logic_vector(31 downto 0)
+);
 end entity;
 
 architecture RTL of extend is
 begin
-  process(instr, immsrc)
-    variable imm : signed(31 downto 0);
-  begin
+process(instr, immsrc)
+variable imm : signed(31 downto 0);
+
+begin
     case immsrc is
 
       when "00" =>
@@ -34,6 +35,6 @@ begin
 
     end case;
 
-    immext <= std_logic_vector(imm);
-  end process;
+immext <= std_logic_vector(imm);
+end process;
 end architecture;

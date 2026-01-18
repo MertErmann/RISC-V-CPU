@@ -4,10 +4,10 @@ use IEEE.numeric_std.all;
 
 
 entity pc_plus4 is
-    port(
-        pc          : in std_logic_vector(31 downto 0);
-        pc_plus4    : out std_logic_vector(31 downto 0)
-    );
+port(
+    pc          : in std_logic_vector(31 downto 0);
+    pc_plus4    : out std_logic_vector(31 downto 0)
+);
 end entity;
 
 architecture RTL of pc_plus4 is

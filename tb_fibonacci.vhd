@@ -22,7 +22,7 @@ architecture sim of tb_fibonacci is
 
 begin
 
-    -- DUT
+    
     dut: entity work.riscv_singlecycle_top_dbg
     port map(
         clk => clk,
@@ -39,25 +39,17 @@ begin
         reg_write_en_o   => reg_write_en_o
     );
 
-    ------------------------------------------------------------------
-    -- CLOCK: 100 ns period  (50ns high, 50ns low)
-    ------------------------------------------------------------------
+
     clk <= not clk after 50 ns;
 
-    ------------------------------------------------------------------
-    -- RESET + RUN
-    ------------------------------------------------------------------
+
     process
     begin
-        -- reset 2 cycle
         rst <= '1';
         wait for 200 ns;
         rst <= '0';
-
-        -- run long enough
         wait for 5000 ns;
-
-        report "SIM DONE" severity failure;
+     
     end process;
 
 end architecture;

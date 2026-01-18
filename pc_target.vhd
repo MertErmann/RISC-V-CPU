@@ -4,11 +4,11 @@ use IEEE.numeric_std.all;
 
 
 entity pc_target is 
-    port(
-        imm_ext         : in std_logic_vector(31 downto 0);
-        pc              : in std_logic_vector(31 downto 0);
-        pc_target_out   : out std_logic_vector(31 downto 0)
-    );
+port(
+    imm_ext         : in std_logic_vector(31 downto 0);
+    pc              : in std_logic_vector(31 downto 0);
+    pc_target_out   : out std_logic_vector(31 downto 0)
+);
 end entity;
 
 
